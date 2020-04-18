@@ -8,12 +8,13 @@ from PIL import Image
 from starlette.responses import StreamingResponse
 from fastapi import BackgroundTasks, FastAPI
 
-
 app = FastAPI()
+
+app.mount("/client", StaticFiles(directory="public", html=True), name="public")
 
 imgByteArr = None
 
-@app.get("/")
+@app.get("/health-check")
 def read_root():
     return {"Hello": "World"}
 
