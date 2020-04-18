@@ -7,6 +7,7 @@ from PIL import Image
 import signal
 from starlette.responses import StreamingResponse
 from fastapi import BackgroundTasks, FastAPI
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
