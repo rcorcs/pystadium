@@ -10,15 +10,23 @@
   </head>
   <body data-rsssl=1>
     <canvas id="myCanvas" width="578" height="400"></canvas>
-    <script>
+    <script type="text/javascript">
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
       var imageObj = new Image();
 
       imageObj.onload = function() {
-        context.drawImage(imageObj, 69, 50);
+          context.drawImage(imageObj, 69, 50);
       };
+
       imageObj.src = 'https://www.html5canvastutorials.com/demos/assets/darth-vader.jpg';
+
+      function update() {
+        console.log('pooling');
+        setTimeout( () => update(), 300 );
+      };
+
+      update();
     </script>
   </body>
 </html>
