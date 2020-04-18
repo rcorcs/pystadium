@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body data-rsssl=1>
+    <canvas id="myCanvas" width="578" height="400"></canvas>
+    <script type="text/javascript">
+      const canvas = document.getElementById('myCanvas');
+      const context = canvas.getContext('2d');
+      const image = new Image();
+
+      function fetch_image(){
+
+        // Fetch the original image
+        fetch('/image/picture.png')
+        // Retrieve its body as ReadableStream
+        .then(response => response.body)
+        .then(rs => {
+          const reader = rs.getReader();
+
+          return new ReadableStream({
+            async start(controller) {
+              while (true) {
+                const { done, value } = await reader.read();
+
+                // When no more data needs to be consumed, break the reading
+                if (done) {
+                  break;
+                }
+
+                // Enqueue the next data chunk into our target stream
+                controller.enqueue(value);
+              }
+
+              // Close the stream
+              controller.close();
+              reader.releaseLock();
+            }
+          })
+        })
+        // Create a new response out of the stream
+        .then(rs => new Response(rs))
+        // Create an object URL for the response
+        .then(response => response.blob())
+        .then(blob => URL.createObjectURL(blob))
+        // Update image
+        .then(url => {
+          image.src = url;
+          context.drawImage(image, 69, 50);
+        })
+        .catch(console.error);
+      }
+
+      function update() {
+        fetch_image();
+        setTimeout( () => update(), 300 );
+      };
+
+      update();
+    </script>
+  </body>
+</html>
