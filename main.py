@@ -2,13 +2,16 @@ import io
 from time import sleep
 import threading
 import signal
-
+import logging
 from PIL import Image
-
+import signal
 from starlette.responses import StreamingResponse
 from fastapi import BackgroundTasks, FastAPI
 
 app = FastAPI()
+
+logger = logging.getLogger("api")
+logger.setLevel(logging.DEBUG)
 
 app.mount("/client", StaticFiles(directory="public", html=True), name="public")
 
@@ -37,3 +40,10 @@ def thread_func():
 
 x = threading.Thread(target=thread_func)
 x.start()
+
+def on_exit(signum, frame):
+    logger.info('Killing remaining threads...')
+    logger.info('Bye!')
+
+signal.signal(signal.SIGINT, on_exit)
+signal.signal(signal.SIGTERM, on_exit)
