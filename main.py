@@ -1,10 +1,17 @@
 import io
+from time import sleep
+import threading
+import signal
+
 from PIL import Image
+
 from starlette.responses import StreamingResponse
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI
+
 
 app = FastAPI()
 
+imgByteArr = None
 
 @app.get("/")
 def read_root():
@@ -12,12 +19,20 @@ def read_root():
 
 @app.get("/image/{image_name}")
 def read_image(image_name: str):
-    img = Image.open("picture.jpg")
-    imgByteArr = io.BytesIO()
-    img.save(imgByteArr, format='PNG')
-    imgByteArr = imgByteArr.getvalue()
+    global imgByteArr
     return StreamingResponse(io.BytesIO(imgByteArr), media_type="image/png")
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+def thread_func():
+    import random
+    global imgByteArr
+    while True:
+        path = random.choice(['bh.jpg','bonn.jpg','itacolomi.jpg'])
+        print('ImageUpdate:',path)
+        img = Image.open(path)
+        imgByteIO = io.BytesIO()
+        img.save(imgByteIO, format='PNG')
+        imgByteArr = imgByteIO.getvalue()
+        sleep(1)
+
+x = threading.Thread(target=thread_func)
+x.start()
