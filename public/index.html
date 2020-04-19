@@ -9,11 +9,12 @@
     </style>
   </head>
   <body data-rsssl=1>
-    <canvas id="myCanvas" width="578" height="400"></canvas>
+    <canvas id="myCanvas"></canvas>
     <script type="text/javascript">
       const canvas = document.getElementById('myCanvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       const context = canvas.getContext('2d');
-      const image = new Image();
 
       function fetch_image(){
 
@@ -51,15 +52,19 @@
         .then(blob => URL.createObjectURL(blob))
         // Update image
         .then(url => {
+          const image = new Image();
           image.src = url;
-          context.drawImage(image, 69, 50);
+          console.log('refresh > ' + url);
+          image.onload = function(){
+            context.drawImage(image, 0, 0);
+          };
         })
         .catch(console.error);
       }
 
       function update() {
         fetch_image();
-        setTimeout( () => update(), 300 );
+        setTimeout( () => update(), 30 );
       };
 
       update();
