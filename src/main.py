@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from stadium import Stadium
 
-import pong
+from games.soccer import soccer
 
 app = FastAPI()
 
@@ -21,6 +21,7 @@ stadium = Stadium()
 
 logger = logging.getLogger("api")
 logger.setLevel(logging.DEBUG)
+
 
 app.mount("/client", StaticFiles(directory="../public", html=True), name="public")
 
@@ -47,6 +48,6 @@ def read_input(data: Data):
 def shutdown_event():
   stadium.shutdown()
 
-x = threading.Thread(target=pong.game,args=(stadium,))
+x = threading.Thread(target=soccer.run,args=(stadium,))
 x.start()
 

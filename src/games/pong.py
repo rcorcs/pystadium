@@ -129,7 +129,7 @@ def stadiumMove2(keys):
       if k=='KeyS':
         y2 += 20
 
-def game(stadium):
+def run(stadium):
   global keys
   pygame.mouse.set_visible(False)
   loop = 1
