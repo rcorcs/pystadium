@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from stadium import StadiumScreen
 
-import game
+import pong
 
 app = FastAPI()
 
@@ -43,6 +43,6 @@ signal.signal(signal.SIGINT, on_exit)
 signal.signal(signal.SIGTERM, on_exit)
 
 
-x = threading.Thread(target=game.game,args=(stadium,))
+x = threading.Thread(target=pong.game,args=(stadium,))
 x.start()
 
