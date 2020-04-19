@@ -90,15 +90,14 @@
       function update() {
         fetch_image();
         post_input();
-        setTimeout( () => update(), 10 );
+        setTimeout( () => update(), 15 );
       };
 
       document.addEventListener('keydown', stackKey);
+      document.addEventListener('keypress', stackKey);
 
       function stackKey(e) {
-        if(e.code =='KeyS' || e.code == 'KeyW'|| e.code == 'ArrowUp' || e.code == 'ArrowDown'){
-            input.push(e.code);
-        }
+          input.push(e.code);
       }
 
       update();
