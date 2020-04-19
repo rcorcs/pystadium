@@ -5,6 +5,8 @@ import signal
 import logging
 from PIL import Image
 import signal
+from typing import List
+from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 from fastapi import BackgroundTasks, FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -29,10 +31,17 @@ killed = False
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/image/{image_name}")
-def read_image(image_name: str):
+@app.get("/image")
+def stream_image():
     global stadium
     return StreamingResponse(io.BytesIO(stadium.getByteArray()), media_type="image/png")
+
+class Data(BaseModel):
+    event_input: List[str] = []
+
+@app.post("/input")
+def read_input(data: Data):
+    return {'message': 'ok'}
 
 def on_exit(signum, frame):
     logger.info('Killing remaining threads...')

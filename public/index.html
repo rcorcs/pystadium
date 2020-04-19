@@ -2,6 +2,9 @@
 <html>
   <head>
     <style>
+      html, body {
+         overflow: hidden;
+      }
       body {
         margin: 0px;
         padding: 0px;
@@ -16,10 +19,33 @@
       canvas.height = window.innerHeight;
       const context = canvas.getContext('2d');
 
+      var input = [];
+      function post_input(){
+        if (input.length > 0){
+          var data = {'event_input': input}
+          fetch('/input', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            // flush key array
+            input = [];
+            // console.log('Success:', data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+        }
+      }
+
       function fetch_image(){
 
         // Fetch the original image
-        fetch('/image/picture.png')
+        fetch('/image')
         // Retrieve its body as ReadableStream
         .then(response => response.body)
         .then(rs => {
@@ -54,7 +80,6 @@
         .then(url => {
           const image = new Image();
           image.src = url;
-          console.log('refresh > ' + url);
           image.onload = function(){
             context.drawImage(image, 0, 0);
           };
@@ -64,8 +89,17 @@
 
       function update() {
         fetch_image();
-        setTimeout( () => update(), 30 );
+        post_input();
+        setTimeout( () => update(), 10 );
       };
+
+      document.addEventListener('keydown', stackKey);
+
+      function stackKey(e) {
+        if(e.code =='KeyS' || e.code == 'KeyW'|| e.code == 'ArrowUp' || e.code == 'ArrowDown'){
+            input.push(e.code);
+        }
+      }
 
       update();
     </script>
