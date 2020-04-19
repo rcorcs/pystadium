@@ -40,6 +40,7 @@ class Data(BaseModel):
 
 @app.post("/input")
 def read_input(data: Data):
+    stadium.keyEvents().set(data.event_input)
     return {'message': 'ok'}
 
 @app.on_event("shutdown")

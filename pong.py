@@ -113,20 +113,20 @@ def stadiumMove1(keys):
   global y1 
   for k in keys:
     if y1 > 0:
-      if k=='KeyW':
+      if k=='ArrowUp':
         y1 -= 20
     if y1 <= 450:
-      if k=='KeyS':
+      if k=='ArrowDown':
         y1 += 20
 
 def stadiumMove2(keys):
   global y2
   for k in keys:
     if y2 > 0:
-      if k=='ArrowUp':
+      if k=='KeyW':
         y2 -= 20
     if y2 <= 450:
-      if k=='ArrowDown':
+      if k=='KeyS':
         y2 += 20
 
 def game(stadium):
@@ -134,20 +134,20 @@ def game(stadium):
   pygame.mouse.set_visible(False)
   loop = 1
   while stadium.online():
-    keys = pygame.key.get_pressed()
-    for event in pygame.event.get():
-      if event.type == pygame.QUIT:
-        loop = 0
-    move1(keys)
-    move2(keys)
+    #keys = pygame.key.get_pressed()
+    #for event in pygame.event.get():
+    #  if event.type == pygame.QUIT:
+    #    loop = 0
+    #move1(keys)
+    #move2(keys)
     sKeys = stadium.keyEvents().consume()
     stadiumMove1(sKeys)
     stadiumMove2(sKeys)
     move_ball(xb, yb)
     
     ball()
-    sprite1()
-    sprite2()
+    sprite1(y1)
+    sprite2(y2)
     collision()
     pygame.display.update()
 
