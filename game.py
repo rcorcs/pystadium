@@ -26,7 +26,7 @@ class Paddle(pygame.sprite.Sprite):
         # Fetch the rectangle object that has the dimensions of the image.
         self.rect = self.image.get_rect()
    
-def game():
+def game(stadium):
     # Open a new window
     size = (700, 500)
     screen = pygame.display.set_mode(size)
@@ -80,6 +80,7 @@ def game():
         pygame.display.flip()
 
         pygame.image.save(screen, "screenshot.jpeg")
+        stadium.loadImageFile("screenshot.jpeg")
 
         # --- Limit to 60 frames per second
         clock.tick(60)
