@@ -22,7 +22,7 @@ stadium = Stadium()
 logger = logging.getLogger("api")
 logger.setLevel(logging.DEBUG)
 
-app.mount("/client", StaticFiles(directory="public", html=True), name="public")
+app.mount("/client", StaticFiles(directory="../public", html=True), name="public")
 
 imgByteArr = None
 killed = False
