@@ -11,13 +11,13 @@ from starlette.responses import StreamingResponse
 from fastapi import BackgroundTasks, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from stadium import StadiumScreen
+from stadium import Stadium
 
 import pong
 
 app = FastAPI()
 
-stadium = StadiumScreen()
+stadium = Stadium()
 
 logger = logging.getLogger("api")
 logger.setLevel(logging.DEBUG)
@@ -33,8 +33,7 @@ def read_root():
 
 @app.get("/image")
 def stream_image():
-    global stadium
-    return StreamingResponse(io.BytesIO(stadium.getByteArray()), media_type="image/png")
+    return StreamingResponse(io.BytesIO(stadium.screen().getByteArray()), media_type="image/png")
 
 class Data(BaseModel):
     event_input: List[str] = []
@@ -43,14 +42,9 @@ class Data(BaseModel):
 def read_input(data: Data):
     return {'message': 'ok'}
 
-def on_exit(signum, frame):
-    logger.info('Killing remaining threads...')
-    logger.info('Bye!')
-    killed = True
-
-signal.signal(signal.SIGINT, on_exit)
-signal.signal(signal.SIGTERM, on_exit)
-
+@app.on_event("shutdown")
+def shutdown_event():
+  stadium.shutdown()
 
 x = threading.Thread(target=pong.game,args=(stadium,))
 x.start()
