@@ -1,23 +1,27 @@
 import io
+import threading
+import importlib.util
+
 from PIL import Image, ImageDraw
 
 class Screen:
-  def __init__(self, width, height):
-    self._imgByteArr = None
+  def __init__(self,game=None):
+    self._game = game
+    self._img = None
 
   def loadImageFile(self, path):
     self.updateImage(Image.open(path))
 
-  def updateByteArray(self, byteArray):
-    self._imgByteArr = byteArray
-
   def updateImage(self,img):
-    imgByteIO = io.BytesIO()
-    img.save(imgByteIO, format='PNG')
-    self._imgByteArr = imgByteIO.getvalue()
+    self._img = img
 
-  def getByteArray(self):
-    return self._imgByteArr
+  def getByteArray(self,fmt='PNG'):
+    imgByteArr = None
+    if self._img:
+      imgByteIO = io.BytesIO()
+      self._img.save(imgByteIO, format=fmt)
+      imgByteArr = imgByteIO.getvalue()
+    return imgByteArr
 
 class KeyEvents:
   def __init__(self):
@@ -33,9 +37,19 @@ class KeyEvents:
 
 class Stadium:
   def __init__(self):
-    self._screen = Screen(500, 500)
+    self._screen = Screen()
     self._keyEvents = KeyEvents()
+    self._online = False
+
+  def load(self,name,path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    self._game = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(self._game)
+
+  def run(self):
     self._online = True
+    self._thread = threading.Thread(target=self._game.run,args=(self,))
+    self._thread.start()
 
   def shutdown(self):
     self._online = False

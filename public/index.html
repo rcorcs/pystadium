@@ -19,11 +19,14 @@
       canvas.height = window.innerHeight;
       const context = canvas.getContext('2d');
 
+      game = 'pong'
+      fetch('/launch/'+game)
+
       var input = [];
       function post_input(){
         if (input.length > 0){
           var data = {'event_input': input}
-          fetch('/input', {
+          fetch('/input/'+game, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -45,7 +48,7 @@
       function fetch_image(){
 
         // Fetch the original image
-        fetch('/image')
+        fetch('/image/'+game)
         // Retrieve its body as ReadableStream
         .then(response => response.body)
         .then(rs => {
@@ -81,6 +84,7 @@
           const image = new Image();
           image.src = url;
           image.onload = function(){
+            context.clearRect(0,0,canvas.width,canvas.height);
             context.drawImage(image, 0, 0);
           };
         })

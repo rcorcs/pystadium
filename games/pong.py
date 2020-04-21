@@ -1,9 +1,10 @@
 # pong!
 import pygame, sys
 
+from PIL import Image
+
 import os
 
-os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -23,12 +24,6 @@ dbv = 0 # down
 # Score of player 1 and 2
 scorep1 = 0
 scorep2 = 0
-
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode((500, 500))
-pygame.display.set_caption("My game" + "Score player 1: " + str(scorep1) + " - Score player 2: " + str(scorep2))
-
-pygame.init()
 
 def ball():
   "Draw the ball"
@@ -130,8 +125,16 @@ def stadiumMove2(keys):
         y2 += 20
 
 def run(stadium):
-  global keys
+  global keys, screen
+
+  os.environ["SDL_VIDEODRIVER"] = "dummy"
+  clock = pygame.time.Clock()
+  screen = pygame.display.set_mode((500, 500))
+  #pygame.display.set_caption("My game" + "Score player 1: " + str(scorep1) + " - Score player 2: " + str(scorep2))
   pygame.mouse.set_visible(False)
+
+  pygame.init()
+
   loop = 1
   while stadium.online():
     #keys = pygame.key.get_pressed()
@@ -151,9 +154,38 @@ def run(stadium):
     collision()
     pygame.display.update()
 
-    pygame.image.save(screen, "screenshot.jpeg")
-    stadium.screen().loadImageFile("screenshot.jpeg")
+    imageBytes = pygame.image.tostring(screen, "RGBA", False)
+    img = Image.frombytes("RGBA",(500, 500),imageBytes)
+    stadium.screen().updateImage(img)
 
     screen.fill((0, 0, 0))
     clock.tick(30)
   pygame.quit()
+
+if __name__ == "__main__":
+  global keys, screen
+  clock = pygame.time.Clock()
+  screen = pygame.display.set_mode((500, 500))
+  pygame.display.set_caption("My game" + "Score player 1: " + str(scorep1) + " - Score player 2: " + str(scorep2))
+  pygame.mouse.set_visible(False)
+  pygame.init()
+  loop = True
+  while loop:
+    keys = pygame.key.get_pressed()
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        loop = False
+    move1(keys)
+    move2(keys)
+    move_ball(xb, yb)
+    
+    ball()
+    sprite1(y1)
+    sprite2(y2)
+    collision()
+    pygame.display.update()
+
+    screen.fill((0, 0, 0))
+    clock.tick(30)
+  pygame.quit()
+
